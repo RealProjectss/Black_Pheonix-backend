@@ -8,7 +8,7 @@ const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "API Documentation Zaporka project",
+      title: "API Documentation Black Pheonix project",
       version: "1.0.0",
       description: "Documentation for the backend APIs",
     },
