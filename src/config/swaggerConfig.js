@@ -15,10 +15,10 @@ const swaggerOptions = {
     basePath: "/api/v1",
     servers: [
       {
-        url: `http://localhost:${PORT}`,
+        url: "https://black-pheonix-backend.onrender.com"
       },
       {
-        url: ""
+        url: `http://localhost:${PORT}`,
       },
     ],
     components: {
