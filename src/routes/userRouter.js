@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const userModel = require("../models/userModel");
 const crudCreator = require("../utils/crudCreator");
+const { updateUser, getUsersByRole } = require("../controllers/userController");
 
 const userController = crudCreator(userModel);
 
@@ -17,6 +18,14 @@ const userController = crudCreator(userModel);
  *   get:
  *     summary: Get all users
  *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: role
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [user, admin]
+ *         description: User Role
  *     responses:
  *       200:
  *         description: List of all users
@@ -95,28 +104,9 @@ const userController = crudCreator(userModel);
  *         description: User not found
  */
 
-router.get("/", userController.getAll);
+router.get("/", getUsersByRole);
 router.get("/:id", userController.getOne);
-router.put("/:id", async (req, res) => {
-  try {
-    const user = await userModel.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const fieldsToUpdate = ["phoneNumber", "firstName", "lastName", "address", "gender", "role", "password"];
-    fieldsToUpdate.forEach((field) => {
-      if (req.body[field] !== undefined || req.body[field] !== null) {
-        user[field] = req.body[field];
-      }
-    });
-
-    await user.save();
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+router.put("/:id", updateUser);
 router.delete("/:id", userController.remove);
 
 module.exports = router;

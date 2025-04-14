@@ -58,4 +58,7 @@ const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
 app.listen(PORT, () => {
   console.log(`Server: ${DOMAIN}`);
   console.log(`Swagger: ${DOMAIN}/swagger`);
+  console.log(`=========================================================================`);
+  console.log(`Localhost: http://localhost:8000`);
+  console.log(`Swagger: http://localhost:8000/swagger`);
 });
