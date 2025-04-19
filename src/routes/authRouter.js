@@ -28,34 +28,39 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             required:
+ *               - username
  *               - phoneNumber
  *               - firstName
  *               - lastName
  *               - address
  *               - role
  *             properties:
+ *               username:
+ *                 type: string
+ *                 example: ""
  *               phoneNumber:
  *                 type: string
- *                 example: "+1234567890"
+ *                 example: ""
  *               firstName:
  *                 type: string
- *                 example: "Иван"
+ *                 example: ""
  *               lastName:
  *                 type: string
- *                 example: "Иванов"
+ *                 example: ""
  *               address:
  *                 type: string
- *                 example: "ул. Ленина, д. 1"
+ *                 example: ""
  *               gender:
  *                 type: string
+ *                 enum: [male, female]
  *                 example: "male"
  *               role:
  *                 type: string
- *                 enum: [admin, user]
+ *                 enum: [admin, mainadmin]
  *                 example: "admin"
  *               password:
  *                 type: string
- *                 example: "securepassword"
+ *                 example: ""
  *     responses:
  *       201:
  *         description: Успешная регистрация
@@ -90,16 +95,16 @@ router.post("/register", register);
  *           schema:
  *             type: object
  *             required:
- *               - phoneNumber
+ *               - username
  *               - password
  *             properties:
- *               phoneNumber:
+ *               username:
  *                 type: string
- *                 example: "+1234567890"
+ *                 example: ""
  *               password:
  *                 type: string
  *                 format: password
- *                 example: "securepassword"
+ *                 example: ""
  *     responses:
  *       200:
  *         description: Успешный вход
@@ -120,6 +125,9 @@ router.post("/register", register);
  *                     id:
  *                       type: string
  *                       example: "60d0fe4f5311236168a109ca"
+ *                     username:
+ *                       type: string
+ *                       example: "username"
  *                     phoneNumber:
  *                       type: string
  *                       example: "+1234567890"
@@ -164,6 +172,9 @@ router.post("/login", login);
  *                     id:
  *                       type: string
  *                       example: "60d0fe4f5311236168a109ca"
+ *                     username:
+ *                       type: string
+ *                       example: "username"
  *                     phoneNumber:
  *                       type: string
  *                       example: "+1234567890"

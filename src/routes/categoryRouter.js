@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const categoryModel = require("../models/categoryModel");
 const crudCreator = require("../utils/crudCreator");
-const authMiddleware = require("../middleware/authMiddleware")
+const authMiddleware = require("../middleware/authMiddleware");
 
 const categoryController = crudCreator(categoryModel);
 
@@ -79,8 +79,6 @@ const categoryController = crudCreator(categoryModel);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - name
  *             properties:
  *               name:
  *                 type: string
@@ -134,16 +132,9 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    let { name, slug } = req.body;
-    if (!name) {
-      return res.status(400).json({ error: "Name is required" });
-    }
-    if (!slug) {
-      slug = name.replaceAll(" ", "-");
-    }
     const category = await categoryModel.findByIdAndUpdate(
       req.params.id,
-      { name, slug },
+      { ...req.body },
       {
         new: true,
         runValidators: true,

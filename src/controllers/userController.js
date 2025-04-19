@@ -5,9 +5,9 @@ const getUsersByRole = async (req, res) => {
     const { role } = req.query;
     let usersList;
     if (role) {
-      usersList = await userModel.find({ role: role });
+      usersList = await userModel.find({ role: role }).select("-password");
     } else {
-      usersList = await userModel.find()
+      usersList = await userModel.find().select("-password");
     }
 
     res.status(200).json({ success: true, data: usersList });
@@ -18,27 +18,12 @@ const getUsersByRole = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const user = await userModel.findById(req.params.id);
+    const user = await userModel
+      .findByIdAndUpdate(req.params.id, { ...req.body }, { new: true })
+      .select("-password");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    const fieldsToUpdate = [
-      "phoneNumber",
-      "firstName",
-      "lastName",
-      "address",
-      "gender",
-      "role",
-      "password",
-    ];
-    fieldsToUpdate.forEach((field) => {
-      if (req.body[field] !== undefined || req.body[field] !== null) {
-        user[field] = req.body[field];
-      }
-    });
-
-    await user.save();
     res.status(200).json(user);
   } catch (err) {
     res.status(400).json({ message: err.message });

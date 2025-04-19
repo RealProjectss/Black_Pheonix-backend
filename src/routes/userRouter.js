@@ -3,7 +3,7 @@ const userModel = require("../models/userModel");
 const crudCreator = require("../utils/crudCreator");
 const { updateUser, getUsersByRole } = require("../controllers/userController");
 
-const userController = crudCreator(userModel);
+const userController = crudCreator(userModel, { selectFields: "-password" });
 
 /**
  * @swagger
@@ -24,7 +24,7 @@ const userController = crudCreator(userModel);
  *         required: false
  *         schema:
  *           type: string
- *           enum: [user, admin]
+ *           enum: [mainadmin, admin]
  *         description: User Role
  *     responses:
  *       200:

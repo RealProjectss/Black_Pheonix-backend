@@ -19,6 +19,7 @@ const generateToken = (user) => {
 exports.register = async (req, res) => {
   try {
     const {
+      username,
       phoneNumber,
       firstName,
       lastName,
@@ -28,26 +29,17 @@ exports.register = async (req, res) => {
       password,
     } = req.body;
 
-    if (!phoneNumber || !firstName || !lastName || !address) {
+    if (!phoneNumber || !firstName || !lastName || !address || !username) {
       return res.status(400).json({
         success: false,
-        message: "Обязательные поля: phoneNumber, firstName, lastName, address",
+        message:
+          "Обязательные поля: phoneNumber, firstName, lastName, address, username",
       });
     }
 
-    if (role === "admin" && (!password || password.length === 0)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Пароль обязателен для admin" });
-    }
-
-    if (role === "user" && password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Пароль обязателен только для admin" });
-    }
-
-    const existingUser = await User.findOne({ phoneNumber });
+    const existingUser = await User.findOne({
+      $or: [{ phoneNumber }, { username }],
+    });
     if (existingUser) {
       return res
         .status(400)
@@ -55,6 +47,7 @@ exports.register = async (req, res) => {
     }
 
     const user = new User({
+      username,
       phoneNumber,
       firstName,
       lastName,
@@ -72,6 +65,7 @@ exports.register = async (req, res) => {
       message: "Пользователь зарегистрирован",
       user: {
         id: user._id,
+        username: user.username,
         phoneNumber: user.phoneNumber,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -90,28 +84,26 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { phoneNumber, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!phoneNumber) {
+    if (!username) {
       return res
         .status(400)
-        .json({ success: false, message: "Номер телефона обязателен" });
+        .json({ success: false, message: "Юзернейм обязателен" });
     }
 
-    const user = await User.findOne({ phoneNumber });
+    const user = await User.findOne({ username });
     if (!user) {
       return res
         .status(401)
         .json({ success: false, message: "Неверные учетные данные" });
     }
 
-    if (user.role === "admin") {
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Неверный пароль" });
-      }
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Неверный пароль" });
     }
 
     const token = generateToken(user);
@@ -119,6 +111,7 @@ exports.login = async (req, res) => {
       success: true,
       user: {
         id: user._id,
+        username: user.username,
         phoneNumber: user.phoneNumber,
         firstName: user.firstName,
         lastName: user.lastName,

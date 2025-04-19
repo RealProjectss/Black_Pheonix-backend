@@ -7,13 +7,15 @@ const crudCreator = (Model, options = {}) => {
     imageFields = [],
     imageFolder = "",
     populateFields = [],
+    selectFields = [],
   } = options;
 
   return {
     getAll: async (req, res) => {
       try {
         const query = Model.find();
-        if (populateFields) query.populate(populateFields);
+        if (populateFields.length) query.populate(populateFields);
+        if (selectFields.length) query.select(selectFields);
         const items = await query;
         res.status(200).json(items);
       } catch (err) {
@@ -24,7 +26,8 @@ const crudCreator = (Model, options = {}) => {
     getOne: async (req, res) => {
       try {
         const query = Model.findById(req.params.id);
-        if (populateFields) query.populate(populateFields);
+        if (populateFields.length) query.populate(populateFields);
+        if (selectFields.length) query.select(selectFields);
         const item = await query;
         if (!item) return res.status(404).json({ message: "Not found" });
         res.status(200).json(item);
@@ -80,7 +83,8 @@ const crudCreator = (Model, options = {}) => {
           { ...req.body, ...images },
           { new: true }
         );
-        if (populateFields) query.populate(populateFields);
+        if (populateFields.length) query.populate(populateFields);
+        if (selectFields.length) query.select(selectFields);
         const updatedItem = await query;
 
         if (!updatedItem) return res.status(404).json({ message: "Not found" });
