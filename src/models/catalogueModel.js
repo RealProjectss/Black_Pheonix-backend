@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-const categoryModel = new mongoose.Schema(
+const catalogueModel = new mongoose.Schema(
   {
     name: { type: String, required: true },
     slug: { type: String, required: true },
-    subCategories: [
+    categories: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "subCategory",
+        ref: "category",
         required: true,
       },
     ],
@@ -17,4 +17,4 @@ const categoryModel = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("category", categoryModel);
+module.exports = mongoose.model("catalogue", catalogueModel);

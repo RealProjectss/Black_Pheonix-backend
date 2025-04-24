@@ -1,18 +1,16 @@
 const router = require("express").Router();
-const categoryModel = require("../models/categoryModel");
+const catalogueModel = require("../models/catalogueModel");
 const crudCreator = require("../utils/crudCreator");
 const authMiddleware = require("../middleware/authMiddleware");
 
-const categoryController = crudCreator(categoryModel, {
-  populateFields: "subCategories",
-});
+const catalogueController = crudCreator(catalogueModel);
 
 /**
  * @swagger
- * /api/v1/categories:
+ * /api/v1/catalogue:
  *   get:
  *     summary: Получить все категории
- *     tags: [Categories]
+ *     tags: [Catalogue]
  *     responses:
  *       200:
  *         description: Список всех категорий
@@ -21,7 +19,7 @@ const categoryController = crudCreator(categoryModel, {
  *
  *   post:
  *     summary: Создать новую категорию
- *     tags: [Categories]
+ *     tags: [Catalogue]
  *     requestBody:
  *       required: true
  *       content:
@@ -30,17 +28,17 @@ const categoryController = crudCreator(categoryModel, {
  *             type: object
  *             required:
  *               - name
- *               - subCategories
+ *               - categories
  *             properties:
  *               name:
  *                 type: string
  *               slug:
  *                 type: string
- *               subCategories:
+ *               categories:
  *                 type: array
  *                 items:
  *                   type: string
- *                   example: "sub_category_mongodb_id"
+ *                   example: "category_mongodb_id"
  *     responses:
  *       201:
  *         description: Категория успешно создана
@@ -52,10 +50,10 @@ const categoryController = crudCreator(categoryModel, {
 
 /**
  * @swagger
- * /api/v1/categories/{id}:
+ * /api/v1/catalogue/{id}:
  *   get:
  *     summary: Получить одну категорию
- *     tags: [Categories]
+ *     tags: [Catalogue]
  *     parameters:
  *       - in: path
  *         name: id
@@ -73,7 +71,7 @@ const categoryController = crudCreator(categoryModel, {
  *
  *   put:
  *     summary: Обновить категорию
- *     tags: [Categories]
+ *     tags: [Catalogue]
  *     parameters:
  *       - in: path
  *         name: id
@@ -92,11 +90,11 @@ const categoryController = crudCreator(categoryModel, {
  *                 type: string
  *               slug:
  *                 type: string
- *               subCategories:
+ *               categories:
  *                 type: array
  *                 items:
  *                   type: string
- *                   example: "sub_category_mongodb_id"
+ *                   example: "category_mongodb_id"
  *     responses:
  *       200:
  *         description: Категория успешно обновлена
@@ -109,7 +107,7 @@ const categoryController = crudCreator(categoryModel, {
  *
  *   delete:
  *     summary: Удалить категорию
- *     tags: [Categories]
+ *     tags: [Catalogue]
  *     parameters:
  *       - in: path
  *         name: id
@@ -126,31 +124,31 @@ const categoryController = crudCreator(categoryModel, {
  *         description: Ошибка сервера
  */
 
-router.get("/", categoryController.getAll);
-router.get("/:id", categoryController.getOne);
+router.get("/", catalogueController.getAll);
+router.get("/:id", catalogueController.getOne);
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    let { name, slug, subCategories } = req.body;
+    let { name, slug, categories } = req.body;
     if (!name) {
-      return res.status(400).json({ message: "Name is required" });
+      return res.status(400).json({ error: "Name is required" });
     }
     if (!slug || slug === "string") {
       slug = name.replaceAll(" ", "-");
     }
-    if (subCategories?.length === 0) {
+    if (categories?.length === 0) {
       return res
         .status(400)
-        .json({ message: "subCategories field is required" });
+        .json({ message: "Categories field is required" });
     }
-    const category = await categoryModel.create({ name, slug, subCategories });
-    res.status(201).json(category);
+    const catalogue = await catalogueModel.create({ name, slug, categories });
+    res.status(201).json(catalogue);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const category = await categoryModel.findByIdAndUpdate(
+    const catalogue = await catalogueModel.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
       {
@@ -158,11 +156,11 @@ router.put("/:id", authMiddleware, async (req, res) => {
         runValidators: true,
       }
     );
-    res.status(201).json(category);
+    res.status(201).json(catalogue);
   } catch (error) {
-    res.status(400).json({ mesasge: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
-router.delete("/:id", authMiddleware, categoryController.remove);
+router.delete("/:id", authMiddleware, catalogueController.remove);
 
 module.exports = router;
