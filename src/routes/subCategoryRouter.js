@@ -2,6 +2,7 @@ const router = require("express").Router();
 const subCategoryModel = require("../models/subCategoryModel");
 const crudCreator = require("../utils/crudCreator");
 const authMiddleware = require("../middleware/authMiddleware");
+const { slugify } = require("transliteration");
 
 const subCategoryController = crudCreator(subCategoryModel);
 
@@ -122,7 +123,9 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "Name is required" });
     }
     if (!slug || slug === "string") {
-      slug = name.replaceAll(" ", "-");
+      slug = slugify(name);
+    } else {
+      slug = slugify(slug);
     }
     const subCategory = await subCategoryModel.create({ name, slug });
     res.status(201).json(subCategory);
@@ -132,14 +135,21 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const subCategory = await subCategoryModel.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    let { name, slug } = req.body;
+    if (!slug || slug === "string") {
+      slug = slugify(name);
+    } else {
+      slug = slugify(slug);
+    }
+    const subCategory = await subCategoryModel
+      .findByIdAndUpdate(
+        req.params.id,
+        { name, slug },
+        {
+          new: true,
+          runValidators: true,
+        }
+      )
     res.status(201).json(subCategory);
   } catch (error) {
     res.status(400).json({ error: error.message });
