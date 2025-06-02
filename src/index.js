@@ -16,8 +16,9 @@ const connectDB = require("./config/database");
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
 const categoryRouter = require("./routes/categoryRouter");
-const subCategoryRouter = require("./routes/subCategoryRouter");
-const catalogueRouter = require("./routes/catalogueRouter");
+const productRouter = require("./routes/productRouter");
+const orderRouter = require("./routes/ordersRouter");
+const swiperRouter = require("./routes/swiperRouter");
 
 const app = express();
 
@@ -37,7 +38,9 @@ const allowedOrigins = [
 ];
 
 // CORS
-app.use(cors({origin: allowedOrigins, methods: ["POST", "PUT", "DELETE", "GET"]}))
+app.use(
+  cors({ origin: allowedOrigins, methods: ["POST", "PUT", "DELETE", "GET"] })
+);
 
 // Logging
 if (process.env.NODE_ENV !== "production") {
@@ -53,8 +56,9 @@ app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authMiddleware, userRouter);
 app.use("/api/v1/categories", categoryRouter);
-app.use("/api/v1/sub-categories", subCategoryRouter);
-app.use("/api/v1/catalogue", catalogueRouter);
+app.use("/api/v1/products", productRouter);
+app.use("/api/v1/orders", orderRouter);
+app.use("/api/v1/swiper", swiperRouter);
 
 const PORT = process.env.PORT || 8000;
 const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
@@ -62,7 +66,9 @@ const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
 app.listen(PORT, () => {
   console.log(`Server: ${DOMAIN}`);
   console.log(`Swagger: ${DOMAIN}/swagger`);
-  console.log(`=========================================================================`);
+  console.log(
+    `=========================================================================`
+  );
   console.log(`Localhost: http://localhost:8000`);
   console.log(`Swagger: http://localhost:8000/swagger`);
 });
