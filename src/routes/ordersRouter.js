@@ -300,7 +300,7 @@ router.post("/", authMiddleware, orderController.create);
 router.put("/:id", authMiddleware, orderController.update);
 router.delete("/:id", authMiddleware, orderController.remove);
 router.patch("/:id/pay", authMiddleware, makePaid);
-router.patch("/:id/add-product/:productId", addProductToOrder);
-router.patch("/:id/remove-product/:productId", removeProductFromOrder);
+router.put("/:id/add-product/:productId", addProductToOrder);
+router.put("/:id/remove-product/:productId", removeProductFromOrder);
 
 module.exports = router;
